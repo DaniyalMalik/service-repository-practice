@@ -1,17 +1,14 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
 import * as express from 'express';
 import { Todo } from '../models/Todo.model';
-import { TodoInterfaceService } from "../services/interfaces/todoInterface.service";
-
-admin.initializeApp(functions.config().firebase);
+import { TodoInterfaceService } from '../services/interfaces/todoInterface.service';
+import IDENTIFIERS from '../identifiers';
+import { resolve } from '../dependencyManagement';
 
 const { Router } = express;
-const DB = admin.firestore();
 const router = Router();
 
 function getTodoService(): TodoInterfaceService {
-  return resolve<TodoInterfaceService>(IDENTIFIER.TodoInterfaceService);
+  return resolve<TodoInterfaceService>(IDENTIFIERS.TodoService);
 }
 
 const todoService = getTodoService();
@@ -23,71 +20,50 @@ router.post('/', async (req, res) => {
   newTodo = { ...newTodo };
   newTodo = Object.assign(newTodo, todo);
 
-  let result: any = await DB.collection('Todo').add(newTodo);
-
-  await DB.collection('Todo').doc(result.id).update({ id: result.id });
-
-  result = await result.get();
-  result = result.data();
+  const result = await todoService.addTodo(newTodo);
 
   res.json({ success: true, result });
 });
 
 router.get('/', async (req, res) => {
-  const result = await DB.collection('Todo').get();
-  const entries: any = [];
+  const result = await todoService.getTodos();
 
-  result.forEach((doc) => {
-    const entry = doc.data();
-
-    entries.push(entry);
-  });
-
-  res.json({ success: true, entries });
+  res.json({ success: true, result });
 });
 
 router.get('/byDone', async (req, res) => {
   let { done } = req.query;
   let boolVal: boolean = done === 'true' ? true : false;
-  const result = await DB.collection('Todo').where('done', '==', boolVal).get();
-  const entries: any = [];
+  const result = await todoService.getTodosByDone(boolVal);
 
-  result.forEach((doc) => {
-    const entry = doc.data();
-
-    entries.push(entry);
-  });
-
-  res.json({ success: true, entries });
+  res.json({ success: true, result });
 });
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
-  await DB.collection('Todo').doc(id).delete();
+  await todoService.deleteTodo(id);
 
   res.json({ success: true, message: 'Deleted!' });
 });
 
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  let doc: any = await DB.collection('Todo').doc(id).get();
+  const result = await todoService.getTodo(id);
 
-  doc = doc.data();
-
-  res.json({ success: true, doc });
+  if (result) {
+    res.json({ success: true, result });
+  } else {
+    res.json({ success: false });
+  }
 });
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { todo } = req.body;
+  const result = await todoService.updateTodo(id, todo);
 
-  await DB.collection('Todo').doc(id).update(todo);
-
-  let doc: any = await DB.collection('Todo').doc(id).get();
-  doc = doc.data();
-
-  res.json({ success: true, doc });
+  res.json({ success: true, result });
 });
 
 module.exports = router;

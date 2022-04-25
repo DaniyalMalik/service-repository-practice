@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "colors": "^1.4.0",
-    "cors": "^2.8.5",
-    "inversify": "^6.0.1",
-    "morgan": "^1.10.0"
-  }
-}
