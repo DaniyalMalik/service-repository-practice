@@ -15,16 +15,15 @@ const todoService = getTodoService();
 
 router.post('/', async (req, res) => {
   let todo: Todo = req.body;
-
   const result = await todoService.addTodo(todo);
 
-  res.json({ success: true, result });
+  res.json(result);
 });
 
 router.get('/', async (req, res) => {
   const result = await todoService.getTodos();
-  console.log(result, 'result');
-  res.send(result);
+
+  res.json(result);
 });
 
 router.get('/byDone', async (req, res) => {
@@ -32,34 +31,30 @@ router.get('/byDone', async (req, res) => {
   let boolVal: boolean = done === 'true' ? true : false;
   const result = await todoService.getTodosByDone(boolVal);
 
-  res.json({ success: true, result });
+  res.json(result);
 });
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
-  await todoService.deleteTodo(id);
+  const result = await todoService.deleteTodo(id);
 
-  res.json({ success: true, message: 'Deleted!' });
+  res.json(result);
 });
 
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   const result = await todoService.getTodo(id);
 
-  if (result) {
-    res.json({ success: true, result });
-  } else {
-    res.json({ success: false });
-  }
+  res.json(result);
 });
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { todo } = req.body;
+  const todo: Todo = req.body.todo;
   const result = await todoService.updateTodo(id, todo);
 
-  res.json({ success: true, result });
+  res.json(result);
 });
 
 module.exports = router;

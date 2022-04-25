@@ -2,9 +2,9 @@ import * as functions from 'firebase-functions';
 // import * as admin from 'firebase-admin';
 import * as express from 'express';
 import * as cors from 'cors';
-import "reflect-metadata"
+import 'reflect-metadata';
 
-const todoController = require('./controllers/todoController');
+const todoController = require('./controllers/todo.controller');
 
 const main = express();
 const app = express();
@@ -21,8 +21,15 @@ export const practiceProjectApi = functions.https.onRequest(main);
 // type User = {
 //   id: number;
 //   fullName: string;
-//   email: string;
-//   createdOnDate: string;
 // };
+
+// const user: User = {
+//   id: 1,
+//   fullName: 'malik',
+// };
+
+// console.log(user, 'user');
+// user.phone = 0300;
+// console.log(user.phone, 'user');
 
 app.use('/todo', todoController);
