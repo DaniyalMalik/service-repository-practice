@@ -15,20 +15,16 @@ const todoService = getTodoService();
 
 router.post('/', async (req, res) => {
   let todo: Todo = req.body;
-  let newTodo: Todo = new Todo();
 
-  newTodo = { ...newTodo };
-  newTodo = Object.assign(newTodo, todo);
-
-  const result = await todoService.addTodo(newTodo);
+  const result = await todoService.addTodo(todo);
 
   res.json({ success: true, result });
 });
 
 router.get('/', async (req, res) => {
   const result = await todoService.getTodos();
-
-  res.json({ success: true, result });
+  console.log(result, 'result');
+  res.send(result);
 });
 
 router.get('/byDone', async (req, res) => {
