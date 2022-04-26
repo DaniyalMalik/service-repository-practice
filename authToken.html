@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.4/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.4/firebase-firestore.js"></script>
+    <script>
+      var formData;
+      var firebaseConfig = {
+        apiKey: 'AIzaSyDeYME0Kqhs6LjrMSnMJ8A3vWzMPL84gzw',
+        authDomain: 'practice-project-d32c5.firebaseapp.com',
+        databaseURL:
+          'https://practice-project-d32c5-default-rtdb.firebaseio.com',
+        projectId: 'practice-project-d32c5',
+        storageBucket: 'practice-project-d32c5.appspot.com',
+        messagingSenderId: '948869787662',
+        appId: '1:948869787662:web:062e3ea7fae802b786cc5f',
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+
+      let cloudDB = firebase.firestore();
+    </script>
+
+    <script>
+      $(function () {
+        fetchData();
+      });
+
+      async function fetchData() {
+        let check = await firebase
+          .auth()
+          .signInWithEmailAndPassword('test@gmail.com', '12345678');
+        let token = await check.user.getIdToken(true);
+        $('#token').html(token);
+      }
+    </script>
+
+    <textarea id="token" rows="12" cols="100"></textarea>
+  </head>
+</html>

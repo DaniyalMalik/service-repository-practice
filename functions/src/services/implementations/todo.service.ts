@@ -3,7 +3,8 @@ import { TodoInterfaceService } from '../interfaces/todoInterface.service';
 import { Todo } from '../../models/Todo.model';
 import { ResponseModel } from '../../models/Response.model';
 import IDENTIFIERS from '../../identifiers';
-import { TodoInterfaceRepository } from '../../repositories/interface/todoInterface.repository';
+import { TodoInterfaceRepository } from '../../repositories/interfaces/todoInterface.repository';
+import { SubTodo } from '../../models/SubTodo.model';
 
 @injectable()
 export class TodoService implements TodoInterfaceService {
@@ -17,11 +18,31 @@ export class TodoService implements TodoInterfaceService {
     let newTodo: Todo = new Todo();
 
     newTodo = { ...newTodo };
+
     newTodo = Object.assign(newTodo, todo);
 
     const result = await this.varTodoRepository.addTodo(newTodo);
 
     res.setSuccessResponseAndDataWithMessage(result, 'New todo added!', true);
+
+    return res;
+  }
+
+  public async addSubTodo(id: string, todo: Todo): Promise<any> {
+    const res = new ResponseModel();
+    let newSubTodo: SubTodo = new SubTodo();
+
+    newSubTodo = { ...newSubTodo };
+
+    newSubTodo = Object.assign(newSubTodo, todo);
+
+    const result = await this.varTodoRepository.addSubTodo(id, newSubTodo);
+
+    res.setSuccessResponseAndDataWithMessage(
+      result,
+      'New sub todo added!',
+      true,
+    );
 
     return res;
   }
@@ -80,6 +101,23 @@ export class TodoService implements TodoInterfaceService {
     const res = new ResponseModel();
 
     res.setSuccessResponseAndDataWithMessage(result, 'Todo updated!', true);
+
+    return res;
+  }
+
+  public async updateSubTodo(
+    id: string,
+    todoId: string,
+    subTodo: SubTodo,
+  ): Promise<any> {    
+    const result = await this.varTodoRepository.updateSubTodo(
+      id,
+      todoId,
+      subTodo,
+    );
+    const res = new ResponseModel();
+
+    res.setSuccessResponseAndDataWithMessage(result, 'Sub todo updated!', true);
 
     return res;
   }

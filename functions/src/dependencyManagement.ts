@@ -2,9 +2,9 @@ import 'reflect-metadata';
 import IDENTIFIERS from './identifiers';
 import { Container } from 'inversify';
 import { TodoInterfaceService } from './services/interfaces/todoInterface.service';
-import { TodoService } from './services/classes/todo.service';
+import { TodoService } from './services/implementations/todo.service';
 import { TodoRepository } from './repositories/implementations/todo.repository';
-import { TodoInterfaceRepository } from './repositories/interface/todoInterface.repository';
+import { TodoInterfaceRepository } from './repositories/interfaces/todoInterface.repository';
 
 let container = new Container();
 
