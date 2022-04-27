@@ -12,7 +12,7 @@ export class UserService implements UserInterfaceService {
     private varUserRepository: UserInterfaceRepository,
   ) {}
 
-  public async addUser(user: User): Promise<any> {
+  public async signUp(user: User): Promise<any> {
     const res = new ResponseModel();
     let newUser: User = new User();
 
@@ -20,12 +20,21 @@ export class UserService implements UserInterfaceService {
 
     newUser = Object.assign(newUser, user);
 
-    const result = await this.varUserRepository.addUser(newUser);
+    const result = await this.varUserRepository.signUp(newUser);
 
-    res.setSuccessResponseAndDataWithMessage(result, 'New user added!', true);
+    res.setSuccessResponseAndDataWithMessage(result, 'User registered!', true);
 
     return res;
   }
+
+  //   public async signIn(id: string): Promise<any> {
+  //     const res = new ResponseModel();
+  //     const result = await this.varUserRepository.getUser(id);
+
+  //     res.setSuccessResponseAndDataWithMessage(result.user, result.message, true);
+
+  //     return res;
+  //   }
 
   public async getUsers(): Promise<any> {
     const result = await this.varUserRepository.getUsers();
@@ -56,7 +65,7 @@ export class UserService implements UserInterfaceService {
     if (!result) {
       res.setSuccessResponse('No user found!', false);
     } else {
-      res.setSuccessResponseAndData(result, true);
+      res.setSuccessResponseAndData(result.user, result.success);
     }
 
     return res;

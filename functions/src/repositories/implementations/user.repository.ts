@@ -10,7 +10,7 @@ export class UserRepository {
     this.DB = admin.firestore();
   }
 
-  public async addUser(user: User): Promise<any> {
+  public async signUp(user: User): Promise<any> {
     let result: any = await this.DB.collection('User').add(user);
 
     await this.DB.collection('User').doc(result.id).update({ id: result.id });
@@ -46,17 +46,10 @@ export class UserRepository {
 
   public async getUser(id: string): Promise<any> {
     let doc: any = await this.DB.collection('User').doc(id).get();
-    let subDoc: any = await this.DB.collection('User/' + id + '/SubUser').get();
-    let entries: any = [];
 
     doc = doc.data();
-    subDoc.forEach((document: any) => {
-      const entry = document.data();
 
-      entries.push(entry);
-    });
-
-    return { User: doc, SubUsers: entries };
+    return { user: doc, success: true };
   }
 
   public async updateUser(id: string, user: User): Promise<any> {

@@ -1,50 +1,57 @@
 import * as express from 'express';
-import { Todo } from '../models/repoModels/Todo.model';
-import { TodoInterfaceService } from '../services/interfaces/todoInterface.service';
+import { User } from '../models/repoModels/User.model';
+import { UserInterfaceService } from '../services/interfaces/userInterface.service';
 import IDENTIFIERS from '../identifiers';
 import { resolve } from '../dependencyManagement';
 
 const { Router } = express;
 const router = Router();
 
-function getTodoService(): TodoInterfaceService {
-  return resolve<TodoInterfaceService>(IDENTIFIERS.TodoService);
+function getUserService(): UserInterfaceService {
+  return resolve<UserInterfaceService>(IDENTIFIERS.UserService);
 }
 
-const todoService = getTodoService();
+const userService = getUserService();
 
 router.post('/', async (req, res) => {
-  let todo: Todo = req.body.todo;
-  const result = await todoService.addTodo(todo);
+  let user: User = req.body.user;
+
+  const result = await userService.signUp(user);
 
   res.json(result);
 });
 
+// router.get('/login', async (req: any, res) => {
+//   const id: string = req.query.id;
+//   const result = await userService.signIn(id);
+
+//   res.json(result);
+// });
+
 router.get('/', async (req, res) => {
-  const result = await todoService.getTodos();
+  const result = await userService.getUsers();
 
   res.json(result);
 });
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
-
-  const result = await todoService.deleteTodo(id);
+  const result = await userService.deleteUser(id);
 
   res.json(result);
 });
 
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const result = await todoService.getTodo(id);
+  const result = await userService.getUser(id);
 
   res.json(result);
 });
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const todo: Todo = req.body.todo;
-  const result = await todoService.updateTodo(id, todo);
+  const user: User = req.body.user;
+  const result = await userService.updateUser(id, user);
 
   res.json(result);
 });
