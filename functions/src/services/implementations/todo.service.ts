@@ -1,10 +1,10 @@
 import { injectable, inject } from 'inversify';
 import { TodoInterfaceService } from '../interfaces/todoInterface.service';
-import { Todo } from '../../models/Todo.model';
-import { ResponseModel } from '../../models/Response.model';
+import { Todo } from '../../models/repoModels/Todo.model';
+import { ResponseModel } from '../../models/repoModels/Response.model';
 import IDENTIFIERS from '../../identifiers';
 import { TodoInterfaceRepository } from '../../repositories/interfaces/todoInterface.repository';
-import { SubTodo } from '../../models/SubTodo.model';
+import { SubTodo } from '../../models/repoModels/SubTodo.model';
 
 @injectable()
 export class TodoService implements TodoInterfaceService {
@@ -33,7 +33,7 @@ export class TodoService implements TodoInterfaceService {
     let newSubTodo: SubTodo = new SubTodo();
 
     newSubTodo = { ...newSubTodo };
-
+    newSubTodo.todoId = id;
     newSubTodo = Object.assign(newSubTodo, todo);
 
     const result = await this.varTodoRepository.addSubTodo(id, newSubTodo);

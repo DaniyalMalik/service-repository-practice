@@ -1,7 +1,8 @@
-import { Todo } from '../../models/Todo.model';
+import { Todo } from '../../models/repoModels/Todo.model';
 import { injectable } from 'inversify';
-import { SubTodo } from '../../models/SubTodo.model';
+import { SubTodo } from '../../models/repoModels/SubTodo.model';
 import * as admin from 'firebase-admin';
+import { MergedTodo } from '../../models/dtos/MergedTodo.dtos';
 // import { TodoInterfaceRepository } from '../interface/todoInterface.repository';
 
 @injectable()
@@ -42,31 +43,38 @@ export class TodoRepository {
   }
 
   public async getTodos(): Promise<any> {
-    const result = await this.DB.collection('Todo').orderBy('createdAt').get();
-    const entries1: any = [];
-
-    result.forEach(async (doc) => {
-      const entry = doc.data();
+    try {
+      const subTodoResults = await this.DB.collectionGroup('SubTodo').get();
+      const todoResults = await this.DB.collection('Todo').get();
+      let entries1: any = [];
       let entries2: any = [];
-      let subDoc: any = await this.DB.collection(
-        'Todo/' + entry.id + '/SubTodo',
-      ).get();
 
-      await subDoc.forEach((document: any) => {
-        const entry = document.data();
+      todoResults.forEach((doc) => {
+        const entry = doc.data();
+
+        entries1.push(entry);
+      });
+      subTodoResults.forEach(async (doc) => {
+        const entry = doc.data();
 
         entries2.push(entry);
       });
+      entries1.forEach(async (doc1: MergedTodo) => {
+        entries2.forEach(async (doc2: SubTodo) => {
+          if (doc1.id === doc2.todoId) {
+            if (doc1.subTodos) {
+              doc1.subTodos.push(doc2);
+            } else {
+              doc1.subTodos = [doc2];
+            }
+          }
+        });
+      });
 
-      entries1.push({ ...entry, ...entries2 });
-      
-      console.log(entries1, 'entries1');
-      console.log(entries2, 'entries2');
-    });
-
-    console.log(entries1, 'entries1!!!!!!!!!');
-    
-    return entries1;
+      return entries1;
+    } catch (error) {
+      return error;
+    }
   }
 
   public async getTodosByDone(done: boolean): Promise<any> {

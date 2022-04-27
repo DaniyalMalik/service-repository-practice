@@ -1,9 +1,9 @@
 import * as express from 'express';
-import { Todo } from '../models/Todo.model';
+import { Todo } from '../models/repoModels/Todo.model';
 import { TodoInterfaceService } from '../services/interfaces/todoInterface.service';
 import IDENTIFIERS from '../identifiers';
 import { resolve } from '../dependencyManagement';
-import { SubTodo } from '../models/SubTodo.model';
+import { SubTodo } from '../models/repoModels/SubTodo.model';
 
 const { Router } = express;
 const router = Router();

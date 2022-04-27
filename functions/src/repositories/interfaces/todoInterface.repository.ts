@@ -1,5 +1,5 @@
-import { Todo } from '../../models/Todo.model';
-import { SubTodo } from '../../models/SubTodo.model';
+import { Todo } from '../../models/repoModels/Todo.model';
+import { SubTodo } from '../../models/repoModels/SubTodo.model';
 
 export interface TodoInterfaceRepository {
   addTodo(todo: Todo): Promise<any>;

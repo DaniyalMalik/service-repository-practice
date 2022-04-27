@@ -5,5 +5,6 @@ export class SubTodo implements MainInterface {
   name: string = '';
   description: string = '';
   done: boolean = false;
+  todoId: string = '';
   createdAt: number = new Date().getTime();
 }
