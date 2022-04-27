@@ -1,39 +1,34 @@
-// import * as admin from 'firebase-admin';
-// import { injectable } from 'inversify';
+import * as admin from 'firebase-admin';
 
-// @injectable()
-// export class TodoService {
-//   public async authenticate(req: any): Promise<any> {
-//     let authToken;
+export class AuthenticationService {
+  public async authenticate(req: any): Promise<any> {
+    let authToken;
 
-//     console.log(req.headers.authorization, 'req.headers.authorization');
-//     if (
-//       req.headers.authorization &&
-//       req.headers.authorization.startsWith('Bearer ')
-//     ) {
-//       authToken = req.headers.authorization.split('Bearer ')[1];
-//       console.log(authToken, 'authToken');
-//     } else {
-//       return false;
-//     }
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer ')
+    ) {
+      authToken = req.headers.authorization.split('Bearer ')[1];
+    } else {
+      return false;
+    }
 
-//     try {
-//       console.log(admin.auth(), 'admin.auth()');
-//       const verify = await admin.auth().verifyIdToken(authToken);
-//       console.log(verify, 'verify');
-//       return true;
-//     } catch (error) {
-//       return error;
-//     }
-//   }
+    try {
+      await admin.auth().verifyIdToken(authToken);
 
-//   public async verifyAuthToken(authToken: string): Promise<any> {
-//     try {
-//       const verify = await admin.auth().verifyIdToken(authToken);
-//       console.log(verify, 'verify');
-//       return verify;
-//     } catch (error) {
-//       return error;
-//     }
-//   }
-// }
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  public async verifyAuthToken(authToken: string): Promise<any> {
+    try {
+      await admin.auth().verifyIdToken(authToken);
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+}
