@@ -5,6 +5,7 @@ import { ResponseModel } from '../../models/repoModels/Response.model';
 import IDENTIFIERS from '../../identifiers';
 import { TodoInterfaceRepository } from '../../repositories/interfaces/todoInterface.repository';
 import { SubTodo } from '../../models/repoModels/SubTodo.model';
+import { DataCopier } from '../../services/implementations/dataCopier';
 
 @injectable()
 export class TodoService implements TodoInterfaceService {
@@ -16,10 +17,10 @@ export class TodoService implements TodoInterfaceService {
   public async addTodo(todo: Todo): Promise<any> {
     const res = new ResponseModel();
     let newTodo: Todo = new Todo();
+    const validatedTodo = DataCopier.copy(newTodo, todo);
 
     newTodo = { ...newTodo };
-
-    newTodo = Object.assign(newTodo, todo);
+    newTodo = Object.assign(newTodo, validatedTodo);
 
     const result = await this.varTodoRepository.addTodo(newTodo);
 
@@ -28,13 +29,14 @@ export class TodoService implements TodoInterfaceService {
     return res;
   }
 
-  public async addSubTodo(id: string, todo: Todo): Promise<any> {
+  public async addSubTodo(id: string, subTodo: SubTodo): Promise<any> {
     const res = new ResponseModel();
     let newSubTodo: SubTodo = new SubTodo();
+    const validatedTodo = DataCopier.copy(newSubTodo, subTodo);
 
     newSubTodo = { ...newSubTodo };
     newSubTodo.todoId = id;
-    newSubTodo = Object.assign(newSubTodo, todo);
+    newSubTodo = Object.assign(newSubTodo, validatedTodo);
 
     const result = await this.varTodoRepository.addSubTodo(id, newSubTodo);
 
@@ -97,7 +99,9 @@ export class TodoService implements TodoInterfaceService {
   }
 
   public async updateTodo(id: string, todo: Todo): Promise<any> {
-    const result = await this.varTodoRepository.updateTodo(id, todo);
+    let newTodo: Todo = new Todo();
+    const validatedTodo = DataCopier.copy(newTodo, todo);
+    const result = await this.varTodoRepository.updateTodo(id, validatedTodo);
     const res = new ResponseModel();
 
     res.setSuccessResponseAndDataWithMessage(result, 'Todo updated!', true);
@@ -109,11 +113,13 @@ export class TodoService implements TodoInterfaceService {
     id: string,
     todoId: string,
     subTodo: SubTodo,
-  ): Promise<any> {    
+  ): Promise<any> {
+    let newSubTodo: SubTodo = new SubTodo();
+    const validatedSubTodo = DataCopier.copy(newSubTodo, subTodo);
     const result = await this.varTodoRepository.updateSubTodo(
       id,
       todoId,
-      subTodo,
+      validatedSubTodo,
     );
     const res = new ResponseModel();
 
