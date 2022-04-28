@@ -16,7 +16,12 @@ const todoService = getTodoService();
 
 router.post('/', async (req: any, res) => {
   let todo: Todo = req.body.todo;
-  const result = await todoService.addTodo(todo, req.userId);
+  let type: string = req.body.type;
+  const result = await todoService.addTodo(
+    todo,
+    req.userId,
+    type ? type : 'admin',
+  );
 
   res.json(result);
 });

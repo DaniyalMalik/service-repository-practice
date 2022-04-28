@@ -4,6 +4,7 @@ import { Todo } from '../../models/repoModels/Todo.model';
 import { ResponseModel } from '../../models/repoModels/Response.model';
 import IDENTIFIERS from '../../identifiers';
 import { TodoInterfaceRepository } from '../../repositories/interfaces/todoInterface.repository';
+import { RoleInterfaceRepository } from '../../repositories/interfaces/roleInterface.repository';
 import { SubTodo } from '../../models/repoModels/SubTodo.model';
 import { DataCopier } from '../../services/implementations/dataCopier';
 
@@ -12,9 +13,11 @@ export class TodoService implements TodoInterfaceService {
   constructor(
     @inject(IDENTIFIERS.TodoRepository)
     private varTodoRepository: TodoInterfaceRepository,
+    @inject(IDENTIFIERS.RoleRepository)
+    private varRoleRepository: RoleInterfaceRepository,
   ) {}
 
-  public async addTodo(todo: Todo, userId: string): Promise<any> {
+  public async addTodo(todo: Todo, userId: string, type: string): Promise<any> {
     const res = new ResponseModel();
     let newTodo: Todo = new Todo();
     const validatedTodo = DataCopier.copy(newTodo, todo);
@@ -23,6 +26,8 @@ export class TodoService implements TodoInterfaceService {
     newTodo = Object.assign(newTodo, validatedTodo);
 
     const result = await this.varTodoRepository.addTodo(newTodo);
+
+    await this.varRoleRepository.addRole(userId, result.id, type);
 
     res.setSuccessResponseAndDataWithMessage(result, 'New todo added!', true);
 

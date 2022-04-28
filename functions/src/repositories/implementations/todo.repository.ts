@@ -1,4 +1,5 @@
 import { Todo } from '../../models/repoModels/Todo.model';
+// import { Role } from '../../models/repoModels/Role.model';
 import { injectable } from 'inversify';
 import { SubTodo } from '../../models/repoModels/SubTodo.model';
 import * as admin from 'firebase-admin';
@@ -59,6 +60,7 @@ export class TodoRepository implements TodoInterfaceRepository {
 
         entries2.push(entry);
       });
+
       entries1.forEach(async (doc1: MergedTodo) => {
         entries2.forEach(async (doc2: SubTodo) => {
           if (doc1.id === doc2.todoId) {
@@ -70,7 +72,7 @@ export class TodoRepository implements TodoInterfaceRepository {
           }
         });
       });
-
+      console.log(entries1, 'entries1');
       return entries1;
     } catch (error) {
       return error;
@@ -99,18 +101,28 @@ export class TodoRepository implements TodoInterfaceRepository {
   }
 
   public async getTodo(id: string): Promise<any> {
+    let todo = new MergedTodo();
     let doc: any = await this.DB.collection('Todo').doc(id).get();
     let subDoc: any = await this.DB.collection('Todo/' + id + '/SubTodo').get();
-    let entries: any = [];
+    let roles: any = await this.DB.collection('Todo/' + id + '/Role').get();
+    let entries1: any = [];
+    let entries2: any = [];
 
     doc = doc.data();
     subDoc.forEach((document: any) => {
       const entry = document.data();
 
-      entries.push(entry);
+      entries1.push(entry);
     });
+    roles.forEach((document: any) => {
+      const entry = document.data();
 
-    return { Todo: doc, SubTodos: entries };
+      entries2.push(entry);
+    });
+    todo = { ...todo };
+    todo = Object.assign(doc, { subTodos: entries1 }, { roles: entries2 });
+
+    return { todo };
   }
 
   public async updateTodo(id: string, todo: Todo): Promise<any> {

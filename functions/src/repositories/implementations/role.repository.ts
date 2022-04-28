@@ -11,15 +11,47 @@ export class RoleRepository implements RoleInterfaceRepository {
     this.DB = admin.firestore();
   }
 
-  public async addRole(role: Role): Promise<any> {
-    let result: any = await this.DB.collection('Role').add(role);
+  public async addRole(
+    userId: string,
+    todoId: string,
+    type: string,
+  ): Promise<any> {
+    let role = {
+      type,
+      todoId,
+      userId,
+    };
+    let roleInstance = new Role();
 
-    await this.DB.collection('Role').doc(result.id).update({ id: result.id });
+    roleInstance = { ...roleInstance };
+    roleInstance = Object.assign(roleInstance, role);
+
+    let result: any = await this.DB.collection(
+      'Todo/' + role.todoId + '/Role',
+    ).add(roleInstance);
+
+    await this.DB.collection('Todo/' + role.todoId + '/Role')
+      .doc(result.id)
+      .update({ id: result.id });
 
     result = await result.get();
     result = result.data();
 
     return result;
+  }
+
+  public async updateRole(role: Role): Promise<any> {
+    await this.DB.collection('Todo/' + role.todoId + '/Role')
+      .doc(role.id)
+      .update(role);
+
+    let doc: any = await this.DB.collection('Todo/' + role.todoId + '/Role')
+      .doc(role.id)
+      .get();
+
+    doc = doc.data();
+
+    return doc;
   }
 
   //   public async getTodos(): Promise<any> {
@@ -70,15 +102,5 @@ export class RoleRepository implements RoleInterfaceRepository {
   //     });
 
   //     return { Todo: doc, SubTodos: entries };
-  //   }
-
-  //   public async updateTodo(id: string, todo: Todo): Promise<any> {
-  //     await this.DB.collection('Todo').doc(id).update(todo);
-
-  //     let doc: any = await this.DB.collection('Todo').doc(id).get();
-
-  //     doc = doc.data();
-
-  //     return doc;
   //   }
 }
