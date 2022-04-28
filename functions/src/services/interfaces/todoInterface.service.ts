@@ -2,7 +2,7 @@ import { Todo } from '../../models/repoModels/Todo.model';
 import { SubTodo } from '../../models/repoModels/SubTodo.model';
 
 export interface TodoInterfaceService {
-  addTodo(todo: Todo): Promise<any>;
+  addTodo(todo: Todo, userId: string): Promise<any>;
   addSubTodo(id: string, subTodo: SubTodo): Promise<any>;
   getTodos(): Promise<any>;
   getTodosByDone(done: boolean): Promise<any>;

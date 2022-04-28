@@ -14,7 +14,9 @@ export class AuthenticationService {
     }
 
     try {
-      await admin.auth().verifyIdToken(authToken);
+      const verifiedUser = await admin.auth().verifyIdToken(authToken);
+
+      req.userId = verifiedUser.user_id;
 
       return true;
     } catch (error) {

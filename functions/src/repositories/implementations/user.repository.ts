@@ -1,9 +1,10 @@
 import { User } from '../../models/repoModels/User.model';
 import { injectable } from 'inversify';
 import * as admin from 'firebase-admin';
+import { UserInterfaceRepository } from '../interfaces/userInterface.repository';
 
 @injectable()
-export class UserRepository {
+export class UserRepository implements UserInterfaceRepository {
   public DB: admin.firestore.Firestore;
 
   constructor() {

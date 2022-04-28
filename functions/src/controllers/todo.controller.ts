@@ -14,9 +14,9 @@ function getTodoService(): TodoInterfaceService {
 
 const todoService = getTodoService();
 
-router.post('/', async (req, res) => {
+router.post('/', async (req: any, res) => {
   let todo: Todo = req.body.todo;
-  const result = await todoService.addTodo(todo);
+  const result = await todoService.addTodo(todo, req.userId);
 
   res.json(result);
 });
@@ -29,7 +29,7 @@ router.post('/sub', async (req: any, res) => {
   res.json(result);
 });
 
-router.get('/', async (req, res) => {
+router.get('/', async (req: any, res) => {
   const result = await todoService.getTodos();
 
   res.json(result);

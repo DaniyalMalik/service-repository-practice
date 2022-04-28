@@ -14,7 +14,7 @@ export class TodoService implements TodoInterfaceService {
     private varTodoRepository: TodoInterfaceRepository,
   ) {}
 
-  public async addTodo(todo: Todo): Promise<any> {
+  public async addTodo(todo: Todo, userId: string): Promise<any> {
     const res = new ResponseModel();
     let newTodo: Todo = new Todo();
     const validatedTodo = DataCopier.copy(newTodo, todo);

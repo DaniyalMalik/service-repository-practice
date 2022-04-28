@@ -3,10 +3,10 @@ import { injectable } from 'inversify';
 import { SubTodo } from '../../models/repoModels/SubTodo.model';
 import * as admin from 'firebase-admin';
 import { MergedTodo } from '../../models/dtos/MergedTodo.dtos';
-// import { TodoInterfaceRepository } from '../interface/todoInterface.repository';
+import { TodoInterfaceRepository } from '../interfaces/todoInterface.repository';
 
 @injectable()
-export class TodoRepository {
+export class TodoRepository implements TodoInterfaceRepository {
   public DB: admin.firestore.Firestore;
 
   constructor() {
