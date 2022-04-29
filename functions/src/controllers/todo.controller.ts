@@ -4,6 +4,7 @@ import { TodoInterfaceService } from '../services/interfaces/todoInterface.servi
 import IDENTIFIERS from '../identifiers';
 import { resolve } from '../dependencyManagement';
 import { SubTodo } from '../models/repoModels/SubTodo.model';
+import { Role } from '../models/repoModels/Role.model';
 
 const { Router } = express;
 const router = Router();
@@ -71,11 +72,32 @@ router.put('/:id', async (req, res) => {
   res.json(result);
 });
 
+router.post('/role', async (req: any, res) => {
+  const type: string = req.body.type;
+  const todoId: string = req.body.todoId;
+  const result = await todoService.addRole(
+    type ? type : 'admin',
+    todoId,
+    req.userId,
+  );
+
+  res.json(result);
+});
+
 router.put('/sub/:id', async (req: any, res) => {
   const id: string = req.params.id;
   const todoId: string = req.query.todoId;
   const subTodo: SubTodo = req.body.subTodo;
   const result = await todoService.updateSubTodo(id, todoId, subTodo);
+
+  res.json(result);
+});
+
+router.put('/role/:id', async (req: any, res) => {
+  const id: string = req.params.id;
+  const todoId: string = req.query.todoId;
+  const role: Role = req.body.role;
+  const result = await todoService.updateRole(role, id, todoId);
 
   res.json(result);
 });

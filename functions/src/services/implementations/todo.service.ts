@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TodoInterfaceService } from '../interfaces/todoInterface.service';
 import { Todo } from '../../models/repoModels/Todo.model';
+import { Role } from '../../models/repoModels/Role.model';
 import { ResponseModel } from '../../models/repoModels/Response.model';
 import IDENTIFIERS from '../../identifiers';
 import { TodoInterfaceRepository } from '../../repositories/interfaces/todoInterface.repository';
@@ -18,7 +19,6 @@ export class TodoService implements TodoInterfaceService {
   ) {}
 
   public async addTodo(todo: Todo, userId: string, type: string): Promise<any> {
-    const res = new ResponseModel();
     let newTodo: Todo = new Todo();
     const validatedTodo = DataCopier.copy(newTodo, todo);
 
@@ -27,11 +27,7 @@ export class TodoService implements TodoInterfaceService {
 
     const result = await this.varTodoRepository.addTodo(newTodo);
 
-    await this.varRoleRepository.addRole(userId, result.id, type);
-
-    res.setSuccessResponseAndDataWithMessage(result, 'New todo added!', true);
-
-    return res;
+    this.addRole(type, result.id, userId);
   }
 
   public async addSubTodo(id: string, subTodo: SubTodo): Promise<any> {
@@ -50,6 +46,37 @@ export class TodoService implements TodoInterfaceService {
       'New sub todo added!',
       true,
     );
+
+    return res;
+  }
+
+  public async addRole(
+    type: string,
+    todoId: string,
+    userId: string,
+  ): Promise<any> {
+    const res = new ResponseModel();
+    let role = {
+      type,
+      todoId,
+      userId,
+    };
+    let roleInstance = new Role();
+
+    roleInstance = { ...roleInstance };
+    roleInstance = Object.assign(roleInstance, role);
+
+    const result = await this.varRoleRepository.addRole(roleInstance);
+
+    if (result.success) {
+      res.setSuccessResponseAndDataWithMessage(
+        result.data,
+        result.message,
+        result.success,
+      );
+    } else {
+      res.setSuccessResponse(result.message, result.success);
+    }
 
     return res;
   }
@@ -110,6 +137,19 @@ export class TodoService implements TodoInterfaceService {
     const res = new ResponseModel();
 
     res.setSuccessResponseAndDataWithMessage(result, 'Todo updated!', true);
+
+    return res;
+  }
+
+  public async updateRole(
+    role: Role,
+    id: string,
+    todoId: string,
+  ): Promise<any> {
+    const result = await this.varRoleRepository.updateRole(role, id, todoId);
+    const res = new ResponseModel();
+
+    res.setSuccessResponseAndDataWithMessage(result, 'Role updated!', true);
 
     return res;
   }

@@ -11,24 +11,37 @@ export class RoleRepository implements RoleInterfaceRepository {
     this.DB = admin.firestore();
   }
 
-  public async addRole(
-    userId: string,
-    todoId: string,
-    type: string,
-  ): Promise<any> {
-    let role = {
-      type,
-      todoId,
-      userId,
-    };
-    let roleInstance = new Role();
+  public async addRole(role: Role): Promise<any> {
+    let exists: any = await this.DB.collection('Todo/' + role.todoId + '/Role')
+      .where('userId', '==', role.userId)
+      .get();
+    let roles: any = await this.DB.collection(
+      'Todo/' + role.todoId + '/Role',
+    ).get();
+    let entries1: any = [];
+    let entries2: any = [];
 
-    roleInstance = { ...roleInstance };
-    roleInstance = Object.assign(roleInstance, role);
+    exists.forEach((document: any) => {
+      const entry = document.data();
+
+      entries1.push(entry);
+    });
+    roles.forEach((document: any) => {
+      const entry = document.data();
+
+      entries2.push(entry);
+    });
+
+    if (entries1.length > 0) {
+      return {
+        message: 'This user role already exists in this todo!',
+        success: false,
+      };
+    }
 
     let result: any = await this.DB.collection(
       'Todo/' + role.todoId + '/Role',
-    ).add(roleInstance);
+    ).add(role);
 
     await this.DB.collection('Todo/' + role.todoId + '/Role')
       .doc(result.id)
@@ -37,16 +50,24 @@ export class RoleRepository implements RoleInterfaceRepository {
     result = await result.get();
     result = result.data();
 
-    return result;
+    if (entries2.length === 0) {
+      return { result, message: 'New Todo added!', success: true };
+    } else {
+      return { result, message: 'New role added!', success: true };
+    }
   }
 
-  public async updateRole(role: Role): Promise<any> {
-    await this.DB.collection('Todo/' + role.todoId + '/Role')
-      .doc(role.id)
+  public async updateRole(
+    role: Role,
+    id: string,
+    todoId: string,
+  ): Promise<any> {
+    await this.DB.collection('Todo/' + todoId + '/Role')
+      .doc(id)
       .update(role);
 
-    let doc: any = await this.DB.collection('Todo/' + role.todoId + '/Role')
-      .doc(role.id)
+    let doc: any = await this.DB.collection('Todo/' + todoId + '/Role')
+      .doc(id)
       .get();
 
     doc = doc.data();
